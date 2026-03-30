@@ -125,6 +125,11 @@
         .fill-blank { border: none; border-bottom: 2px solid #94a3b8; background: transparent; padding: 2px 5px; width: 120px; text-align: center; outline: none; font-weight: bold; color: var(--primary); }
         .fill-blank:focus { border-bottom-color: var(--primary); }
         .radio-option { display: block; margin: 8px 0; cursor: pointer; }
+
+        /* Fraction CSS */
+        .fraction { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 5px; text-align: center; }
+        .fraction .num { border-bottom: 2px solid currentColor; padding: 0 8px; }
+        .fraction .den { padding: 0 8px; }
     </style>
 </head>
 <body>
@@ -368,157 +373,425 @@
     <!-- TAB 2: COMMUNITY SPREAD -->
     <div id="tab2" class="tab-content">
         <h2>🌍 Spread: Total community infections</h2>
+        
+        <div class="info-card" style="margin-bottom: 20px;">
+            <p style="font-size: 1.05em; line-height: 1.6;">A person who is infected (F<sub>0</sub>) can spread to others with infection rate is R<sub>0</sub>, that means one person could infect R<sub>0</sub> more people after one infection cycle.</p>
+            <p style="font-size: 1.05em; line-height: 1.6;">In a city, there are 5 patients that appeared to be the first case of contracting COVID-19. Set these first cases to be the first cycle of infection. After that, each person infected 2 more people, which made the epidemic blow up. Thus, at the fiftieth cycle, how many infected people are there in the city?</p>
+        </div>
+
         <div class="grid-2">
             <div class="info-card">
-                <h3>📊 Epidemiological Data</h3>
-                <p>A person who is infected can spread to others with an infection rate of <span class="math-symbol">q</span>, meaning one person could infect <span class="math-symbol">q</span> more people after one infection cycle.</p>
-                <p>In a city, there are <strong>5 patients</strong> that appeared to be the first cases of contracting COVID-19. Set these first cases to be the first cycle of infection. After that, each person infected <strong>2 more people</strong>, which made the epidemic blow up. Thus, at the fiftieth cycle, how many infected people are there in the city?</p>
+                <h3>📊 Simulate the situation</h3>
+                <p style="font-style: italic; color: #64748b; margin-bottom: 15px;">Can you simulate the situation using the following data:</p>
                 
-                <div class="input-wrap" style="margin-top: 15px;">
-                    <label>The number of first cases (<span class="math-symbol">u<sub>1</sub></span>):</label>
+                <div class="input-wrap">
+                    <label>The number of F<sub>0</sub>:</label>
                     <input type="number" id="t2_u1" value="5" class="w-full">
                 </div>
                 <div class="input-wrap" style="margin-top: 10px;">
-                    <label>Infection rate (<span class="math-symbol">R<sub>0</sub> = q</span>):</label>
+                    <label>Infection rate R<sub>0</sub>:</label>
                     <input type="number" id="t2_q" value="2" step="0.5">
-                    <small style="color:var(--danger)">Note: Delta/Omicron variants are very contagious with q=5 or q=10.</small>
+                    <small style="color:var(--danger); display: block; margin-top: 4px;">Note: Delta/Omicron variants are very contagious with R<sub>0</sub>=5 or R<sub>0</sub>=10.</small>
                 </div>
                 <div class="input-wrap" style="margin-top: 10px;">
-                    <label>Infection cycle (<span class="math-symbol">n</span>):</label>
+                    <label>Infection cycle:</label>
                     <input type="number" id="t2_n" value="5">
-                    <small>(50 is too large to plot initially, let’s start with a smaller one like 5)</small>
+                    <small style="color:#64748b; display: block; margin-top: 4px;">(50 is too large, let’s start with a smaller like 5)</small>
                 </div>
                 
-                <button class="btn-danger" style="width: 100%; margin-top: 20px;" onclick="calcSpread()">⚠️ SIMULATE INFECTIONS</button>
+                <button class="btn-danger" style="width: 100%; margin-top: 20px;" onclick="calcSpread()">⚠️ CALCULATE / SIMULATE</button>
             </div>
             
             <div class="info-card" style="background: #fff7ed;">
                 <h3>📉 Forecast Results</h3>
                 <div id="t2_result" style="text-align: center; margin-top: 30px; display: none;">
                     <div style="font-size: 3em; font-weight: bold; color: var(--danger);" id="totalInfected">0</div>
-                    <p>Total Infected People</p>
+                    <p>Infected people</p>
                     <div class="formula-box" style="background: white; border-color: orange; color: #c2410c;">
-                        Sum <span class="math-symbol">S<sub>n</sub></span>
+                        Sum <span class="math-symbol">S<sub>n</sub> = <frac>u<sub>1</sub>(q<sup>n</sup> - 1)</frac> / <frac>(q - 1)</frac></span>
                     </div>
                 </div>
                 <canvas id="spreadChart" style="margin-top: 20px; max-height: 200px;"></canvas>
             </div>
         </div>
 
-        <!-- EXERCISE SECTIONS FROM GOOGLE DOC -->
-        <div class="exercise-section">
-            <h3 style="color: var(--primary-dark);">Phase 1: Interact with information and subjects on the website</h3>
+        <!-- EXERCISE SECTION - PHASE 1 -->
+        <div class="exercise-section" id="t2_phase1_container">
+            <h3 style="color: var(--primary-dark); margin-top: 0;">📝 PHASE 1</h3>
+            
             <div class="exercise-item">
-                <strong>Question 1: At the fifth cycle, how many infected people in total are there in the city? (Run the simulation above for cycle 5)</strong>
-                Total at Cycle 5 = <input type="number" id="t2_q1" class="fill-blank" style="width: 80px;">
-            </div>
-            <div class="exercise-item">
-                <strong>Question 2: What is the difference between the number of total infected people at Cycle 1 and Cycle 2?</strong>
-                Difference = <input type="number" id="t2_q2_diff" class="fill-blank" style="width: 80px;"><br>
+                <strong>Question 1: At the fifth cycle, how many infected people in total are there in the city?</strong>
                 <div style="margin-top: 10px;">
-                    What does that number represent? 
-                    <select id="t2_q2_meaning" class="fill-blank" style="width: auto;">
-                        <option value="">-- Select --</option>
-                        <option value="New">The number of new infected people after 1 cycle</option>
-                        <option value="Total">The total number of infected people after 1 cycle</option>
+                    Answer: <input type="number" class="fill-blank" id="t2_q1" style="width: 100px;">
+                </div>
+            </div>
+
+            <div class="exercise-item">
+                <strong>Question 2: What is the difference between the number of total infected people at Cycle 1 and Cycle 2? <span style="font-weight:normal; font-style:italic; font-size:0.9em; color:#64748b;">(Hint: Notice the highlight data of the problem)</span></strong>
+                <div style="margin-top: 10px;">
+                    Difference: <input type="number" class="fill-blank" id="t2_q2_diff" style="width: 100px;">
+                </div>
+                <div style="margin-top: 15px;">
+                    <strong>What does that number represent? Choose the correct answer:</strong>
+                    <label class="radio-option"><input type="radio" name="t2_q2_meaning" value="new"> The number of new infected people after 1 cycle.</label>
+                    <label class="radio-option"><input type="radio" name="t2_q2_meaning" value="total"> The total number of infected people after 1 cycle.</label>
+                </div>
+            </div>
+
+            <div class="exercise-item">
+                <strong>Question 3: Can you list the number of new infected people after each infection cycle, starting from cycle 1?</strong>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px; align-items: center;">
+                    <span>Cycle 1: <input type="number" class="fill-blank" value="5" disabled style="width: 50px; color:#64748b; border-bottom-color: transparent;"></span>
+                    <span>Cycle 2: <input type="number" class="fill-blank" id="t2_q3_2" style="width: 50px;"></span>
+                    <span>Cycle 3: <input type="number" class="fill-blank" id="t2_q3_3" style="width: 50px;"></span>
+                    <span>Cycle 4: <input type="number" class="fill-blank" id="t2_q3_4" style="width: 50px;"></span>
+                    <span>Cycle 5: <input type="number" class="fill-blank" id="t2_q3_5" style="width: 50px;"></span>
+                </div>
+            </div>
+
+            <div class="exercise-item">
+                <strong>Question 4: Those numbers from Question 3 form a sequence, can you name this sequence with the related one?</strong>
+                <div style="margin-top: 10px;">
+                    Name: <input type="text" class="fill-blank" id="t2_q4" style="width: 250px;" placeholder="e.g. Geometric sequence">
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="submitPhase1()" style="width: 100%; margin-top: 10px;">📤 SUBMIT PHASE 1</button>
+            <div id="ex_result_t2_p1" class="inline-alert" style="margin-top: 15px;"></div>
+        </div>
+
+        <!-- PHASE 2 -->
+        <div id="t2_phase2_container" style="display:none; margin-top: 30px; border-top: 2px dashed #cbd5e1; padding-top: 20px;">
+            <h3 style="color: #8b5cf6; margin-top: 0;">🚀 PHASE 2 (Unlocked)</h3>
+            
+            <div class="exercise-item">
+                <strong>Question 5: What is the first term and common ratio of the geometric sequence that represents the number of new infected people after each cycle?</strong>
+                <p style="margin-bottom: 5px;">What are the meanings of them in the initial problem?</p>
+                
+                <div style="margin-top: 10px; line-height: 2;">
+                    <span class="math-symbol">u<sub>1</sub></span> = 
+                    <select id="t2_q5_u1" class="fill-blank" style="width: auto; text-align: left; padding: 2px 5px;">
+                        <option value="">-- Select Meaning --</option>
+                        <option value="F0">The first F0 at Cycle 1</option>
+                        <option value="R0">The infection rate R0</option>
+                    </select>
+                    <br>
+                    <span class="math-symbol">q</span> = 
+                    <select id="t2_q5_q" class="fill-blank" style="width: auto; text-align: left; padding: 2px 5px;">
+                        <option value="">-- Select Meaning --</option>
+                        <option value="F0">The first F0 at Cycle 1</option>
+                        <option value="R0">The infection rate R0</option>
                     </select>
                 </div>
             </div>
+
             <div class="exercise-item">
-                <strong>Question 3: Can you list the number of new infected people after each infection cycle, starting from cycle 1?</strong>
-                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px;">
-                    <span>Cycle 1: 5</span>
-                    <span>Cycle 2: <input type="number" id="t2_q3_c2" class="fill-blank" style="width: 60px;"></span>
-                    <span>Cycle 3: <input type="number" id="t2_q3_c3" class="fill-blank" style="width: 60px;"></span>
-                    <span>Cycle 4: <input type="number" id="t2_q3_c4" class="fill-blank" style="width: 60px;"></span>
-                    <span>Cycle 5: <input type="number" id="t2_q3_c5" class="fill-blank" style="width: 60px;"></span>
+                <strong>Question 6: If we denote the total number of infected people at Cycle 5 as <span class="math-symbol">S<sub>5</sub></span> and similarly for <span class="math-symbol">S<sub>4</sub></span>, <span class="math-symbol">S<sub>3</sub></span>, etc. Match the following expression to form correct equations:</strong>
+                
+                <table style="width: 100%; max-width: 350px; margin-top: 15px; border-collapse: separate; border-spacing: 0 10px;">
+                    <tr>
+                        <td style="text-align: right; width: 60px; font-weight: bold; font-size: 1.1em; font-family: 'Times New Roman', serif;">S<sub>5</sub> = </td>
+                        <td>
+                            <select id="t2_q6_1" class="fill-blank" style="width: 100%; text-align: left;">
+                                <option value="">-- Match Expression --</option>
+                                <option value="S1+10">S1 + 10</option>
+                                <option value="S2+20">S2 + 20</option>
+                                <option value="u1=5">u1 = 5</option>
+                                <option value="S3+40">S3 + 40</option>
+                                <option value="S4+80">S4 + 80</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; font-weight: bold; font-size: 1.1em; font-family: 'Times New Roman', serif;">S<sub>4</sub> = </td>
+                        <td>
+                            <select id="t2_q6_2" class="fill-blank" style="width: 100%; text-align: left;">
+                                <option value="">-- Match Expression --</option>
+                                <option value="S1+10">S1 + 10</option>
+                                <option value="S2+20">S2 + 20</option>
+                                <option value="u1=5">u1 = 5</option>
+                                <option value="S3+40">S3 + 40</option>
+                                <option value="S4+80">S4 + 80</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; font-weight: bold; font-size: 1.1em; font-family: 'Times New Roman', serif;">S<sub>3</sub> = </td>
+                        <td>
+                            <select id="t2_q6_3" class="fill-blank" style="width: 100%; text-align: left;">
+                                <option value="">-- Match Expression --</option>
+                                <option value="S1+10">S1 + 10</option>
+                                <option value="S2+20">S2 + 20</option>
+                                <option value="u1=5">u1 = 5</option>
+                                <option value="S3+40">S3 + 40</option>
+                                <option value="S4+80">S4 + 80</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; font-weight: bold; font-size: 1.1em; font-family: 'Times New Roman', serif;">S<sub>2</sub> = </td>
+                        <td>
+                            <select id="t2_q6_4" class="fill-blank" style="width: 100%; text-align: left;">
+                                <option value="">-- Match Expression --</option>
+                                <option value="S1+10">S1 + 10</option>
+                                <option value="S2+20">S2 + 20</option>
+                                <option value="u1=5">u1 = 5</option>
+                                <option value="S3+40">S3 + 40</option>
+                                <option value="S4+80">S4 + 80</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; font-weight: bold; font-size: 1.1em; font-family: 'Times New Roman', serif;">S<sub>1</sub> = </td>
+                        <td>
+                            <select id="t2_q6_5" class="fill-blank" style="width: 100%; text-align: left;">
+                                <option value="">-- Match Expression --</option>
+                                <option value="S1+10">S1 + 10</option>
+                                <option value="S2+20">S2 + 20</option>
+                                <option value="u1=5">u1 = 5</option>
+                                <option value="S3+40">S3 + 40</option>
+                                <option value="S4+80">S4 + 80</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="exercise-item">
+                <strong>Question 7: Connect all equations from Question 6 and arrange them in the right order as follows:</strong>
+                
+                <table style="width: 100%; max-width: 450px; margin-top: 15px; margin-bottom: 25px; border-collapse: separate; border-spacing: 0 10px;">
+                    <tr>
+                        <td style="text-align: right; width: 60px; font-weight: bold; font-size: 1.1em; font-family: 'Times New Roman', serif;">S<sub>5</sub> = </td>
+                        <td>
+                            <select id="t2_q7_1" class="fill-blank" style="width: 100%; text-align: left;">
+                                <option value="">-- Match Equation --</option>
+                                <option value="S1+10+20+40+80">S1 + 10 + 20 + 40 + 80</option>
+                                <option value="S2+20+40+80">S2 + 20 + 40 + 80</option>
+                                <option value="5+10+20+40+80">5 + 10 + 20 + 40 + 80</option>
+                                <option value="S3+40+80">S3 + 40 + 80</option>
+                                <option value="S4+80">S4 + 80</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; font-weight: bold; font-size: 1.1em; font-family: 'Times New Roman', serif;">= </td>
+                        <td>
+                            <select id="t2_q7_2" class="fill-blank" style="width: 100%; text-align: left;">
+                                <option value="">-- Match Equation --</option>
+                                <option value="S1+10+20+40+80">S1 + 10 + 20 + 40 + 80</option>
+                                <option value="S2+20+40+80">S2 + 20 + 40 + 80</option>
+                                <option value="5+10+20+40+80">5 + 10 + 20 + 40 + 80</option>
+                                <option value="S3+40+80">S3 + 40 + 80</option>
+                                <option value="S4+80">S4 + 80</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; font-weight: bold; font-size: 1.1em; font-family: 'Times New Roman', serif;">= </td>
+                        <td>
+                            <select id="t2_q7_3" class="fill-blank" style="width: 100%; text-align: left;">
+                                <option value="">-- Match Equation --</option>
+                                <option value="S1+10+20+40+80">S1 + 10 + 20 + 40 + 80</option>
+                                <option value="S2+20+40+80">S2 + 20 + 40 + 80</option>
+                                <option value="5+10+20+40+80">5 + 10 + 20 + 40 + 80</option>
+                                <option value="S3+40+80">S3 + 40 + 80</option>
+                                <option value="S4+80">S4 + 80</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; font-weight: bold; font-size: 1.1em; font-family: 'Times New Roman', serif;">= </td>
+                        <td>
+                            <select id="t2_q7_4" class="fill-blank" style="width: 100%; text-align: left;">
+                                <option value="">-- Match Equation --</option>
+                                <option value="S1+10+20+40+80">S1 + 10 + 20 + 40 + 80</option>
+                                <option value="S2+20+40+80">S2 + 20 + 40 + 80</option>
+                                <option value="5+10+20+40+80">5 + 10 + 20 + 40 + 80</option>
+                                <option value="S3+40+80">S3 + 40 + 80</option>
+                                <option value="S4+80">S4 + 80</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; font-weight: bold; font-size: 1.1em; font-family: 'Times New Roman', serif;">= </td>
+                        <td>
+                            <select id="t2_q7_5" class="fill-blank" style="width: 100%; text-align: left;">
+                                <option value="">-- Match Equation --</option>
+                                <option value="S1+10+20+40+80">S1 + 10 + 20 + 40 + 80</option>
+                                <option value="S2+20+40+80">S2 + 20 + 40 + 80</option>
+                                <option value="5+10+20+40+80">5 + 10 + 20 + 40 + 80</option>
+                                <option value="S3+40+80">S3 + 40 + 80</option>
+                                <option value="S4+80">S4 + 80</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+
+                <strong>Rewrite all the numbers from the last equation using only <span class="math-symbol">u<sub>1</sub></span> and <span class="math-symbol">q</span>, we get:</strong>
+                
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; align-items: center; font-size: 1.1em; padding: 10px; background: white; border-radius: 8px; border: 1px dashed var(--primary);">
+                    <span style="font-family: 'Times New Roman', serif; font-weight: bold; color: var(--primary-dark);">S<sub>5</sub> = </span>
+                    <select id="t2_q7_eq1" class="fill-blank" style="width: auto; padding: 2px;">
+                        <option value="">...</option>
+                        <option value="u1.q+">u1.q +</option>
+                        <option value="u1.q4">u1.q^4</option>
+                        <option value="u1.q2+">u1.q^2 +</option>
+                        <option value="u1+">u1 +</option>
+                        <option value="u1.q3+">u1.q^3 +</option>
+                    </select>
+                    <select id="t2_q7_eq2" class="fill-blank" style="width: auto; padding: 2px;">
+                        <option value="">...</option>
+                        <option value="u1.q+">u1.q +</option>
+                        <option value="u1.q4">u1.q^4</option>
+                        <option value="u1.q2+">u1.q^2 +</option>
+                        <option value="u1+">u1 +</option>
+                        <option value="u1.q3+">u1.q^3 +</option>
+                    </select>
+                    <select id="t2_q7_eq3" class="fill-blank" style="width: auto; padding: 2px;">
+                        <option value="">...</option>
+                        <option value="u1.q+">u1.q +</option>
+                        <option value="u1.q4">u1.q^4</option>
+                        <option value="u1.q2+">u1.q^2 +</option>
+                        <option value="u1+">u1 +</option>
+                        <option value="u1.q3+">u1.q^3 +</option>
+                    </select>
+                    <select id="t2_q7_eq4" class="fill-blank" style="width: auto; padding: 2px;">
+                        <option value="">...</option>
+                        <option value="u1.q+">u1.q +</option>
+                        <option value="u1.q4">u1.q^4</option>
+                        <option value="u1.q2+">u1.q^2 +</option>
+                        <option value="u1+">u1 +</option>
+                        <option value="u1.q3+">u1.q^3 +</option>
+                    </select>
+                    <select id="t2_q7_eq5" class="fill-blank" style="width: auto; padding: 2px;">
+                        <option value="">...</option>
+                        <option value="u1.q+">u1.q +</option>
+                        <option value="u1.q4">u1.q^4</option>
+                        <option value="u1.q2+">u1.q^2 +</option>
+                        <option value="u1+">u1 +</option>
+                        <option value="u1.q3+">u1.q^3 +</option>
+                    </select>
                 </div>
             </div>
-            <div class="exercise-item">
-                <strong>Question 4: Those numbers from Question 3 form a sequence. Can you name this sequence?</strong>
-                <input type="text" id="t2_q4" class="fill-blank" style="width: 200px;" placeholder="e.g., arithmetic sequence">
-                <button onclick="checkPhase1()" class="btn-success" style="margin-left: 10px; padding: 5px 15px;">Unlock Phase 2</button>
-                <span id="p1_feedback" style="margin-left: 10px; font-weight: bold; display: none;"></span>
-            </div>
+
+            <button class="btn-primary" onclick="submitPhase2()" style="width: 100%; margin-top: 15px; background: #8b5cf6;">📤 SUBMIT PHASE 2</button>
+            <div id="ex_result_t2_p2" class="inline-alert" style="margin-top: 15px;"></div>
         </div>
 
-        <div id="phase2" class="exercise-section" style="display: none;">
-            <h3 style="color: var(--primary-dark);">Phase 2: Generalize data from the website</h3>
+        <!-- PHASE 3 -->
+        <div id="t2_phase3_container" style="display:none; margin-top: 30px; border-top: 2px dashed #cbd5e1; padding-top: 20px;">
+            <h3 style="color: #ea580c; margin-top: 0;">🔥 PHASE 3 (Unlocked)</h3>
+            
+            <p style="font-size: 1.05em; line-height: 1.6; margin-bottom: 20px; color: var(--text-main);">
+                As we know the rule of each infection cycle, if we continue to add up new terms, we can calculate the total number of infected people at any cycle. <br>
+                But the initial problem asks you to calculate at the 50-th cycle, how can we calculate correctly and fast? <br>
+                Let’s try to find a shortcut for this problem.
+            </p>
+            
             <div class="exercise-item">
-                <strong>Question 5: What is the first term and common ratio of the geometric sequence that represents the number of new infected people after each cycle?</strong>
+                <strong>Question 8: How will the equation in Question 7 change if every infected person infects 2 (<span class="math-symbol">R<sub>0</sub>=q=2</span>) more people? Choose the correct answer.</strong>
                 <div style="margin-top: 10px; line-height: 2;">
-                    <span class="math-symbol">u<sub>1</sub></span> = <input type="number" id="t2_q5_u1" class="fill-blank" style="width: 60px;"> (Meaning: The first cases at Cycle 1)<br>
-                    <span class="math-symbol">q</span> = <input type="number" id="t2_q5_q" class="fill-blank" style="width: 60px;"> (Meaning: The infection rate)
+                    <label class="radio-option">
+                        <input type="radio" name="t2_q8" value="A"> 
+                        <span class="math-symbol">S<sub>5</sub>.q = u<sub>1</sub>.q + u<sub>1</sub>.q<sup>2</sup> + u<sub>1</sub>.q<sup>3</sup> + u<sub>1</sub>.q<sup>4</sup> + u<sub>1</sub>.q<sup>5</sup></span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="t2_q8" value="B"> 
+                        <span class="math-symbol">S<sub>5</sub>.q = u<sub>1</sub>.q + (u<sub>1</sub>.q+q) + (u<sub>1</sub>.q<sup>2</sup>+q<sup>2</sup>) + (u<sub>1</sub>.q<sup>3</sup>+q<sup>3</sup>) + (u<sub>1</sub>.q<sup>4</sup>+q<sup>4</sup>)</span>
+                    </label>
                 </div>
             </div>
+
             <div class="exercise-item">
-                <strong>Question 6: If we denote the total of infected people at Cycle 5 as <span class="math-symbol">S<sub>5</sub> = 5 + 10 + 20 + 40 + 80</span>. Match the correct expression for <span class="math-symbol">2 &times; S<sub>5</sub></span>:</strong>
-                <select id="t2_q6" class="fill-blank" style="width: 100%; margin-top: 10px; text-align: left;">
-                    <option value="">-- Select --</option>
-                    <option value="A">2 &times; S5 = 10 + 20 + 40 + 80 + 160</option>
-                    <option value="B">2 &times; S5 = 5 + 10 + 20 + 40 + 80 + 160</option>
-                </select>
-            </div>
-            <div class="exercise-item">
-                <strong>Question 7: Subtract <span class="math-symbol">S<sub>5</sub></span> from <span class="math-symbol">2 &times; S<sub>5</sub></span>. Arrange in the right order:</strong>
-                <div style="margin-top: 10px;">
-                    <span class="math-symbol">2 &times; S<sub>5</sub> - S<sub>5</sub> = </span> <input type="number" id="t2_q7_1" class="fill-blank" style="width: 60px;" placeholder="?"> - <input type="number" id="t2_q7_2" class="fill-blank" style="width: 60px;" placeholder="?"><br>
-                    Rewrite all numbers from the last equation using only <span class="math-symbol">u<sub>1</sub></span> and <span class="math-symbol">q</span>:<br>
-                    <span class="math-symbol">S<sub>5</sub> &times; (q - 1) = u<sub>1</sub> &times; q<sup>5</sup> - u<sub>1</sub></span>
+                <strong>Question 9: When you subtract the equation of Question 8 from the equation of Question 7. What will you get?</strong>
+                <div style="margin-top: 10px; line-height: 2;">
+                    <label class="radio-option">
+                        <input type="radio" name="t2_q9" value="A"> 
+                        <span class="math-symbol">S<sub>5</sub> - S<sub>5</sub>.q = u<sub>1</sub> - u<sub>1</sub>.q<sup>5</sup></span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="t2_q9" value="B"> 
+                        <span class="math-symbol">S<sub>5</sub> - S<sub>5</sub>.q = u<sub>1</sub> - u<sub>1</sub>.q - q - q<sup>2</sup> - q<sup>3</sup> - q<sup>4</sup></span>
+                    </label>
                 </div>
             </div>
+
+            <div class="exercise-item">
+                <strong>Question 10: Simplify the equation to obtain the formula for calculating the total sum (the left-hand side with <span class="math-symbol">S<sub>5</sub></span> only). What condition should we add?</strong>
+                <div style="margin-top: 10px; line-height: 2;">
+                    <label class="radio-option">
+                        <input type="radio" name="t2_q10" value="q_neq_0"> 
+                        <span class="math-symbol">q &ne; 0</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="t2_q10" value="q_neq_1"> 
+                        <span class="math-symbol">q &ne; 1</span>
+                    </label>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="submitPhase3()" style="width: 100%; margin-top: 15px; background: #ea580c;">📤 SUBMIT PHASE 3</button>
+            <div id="ex_result_t2_p3" class="inline-alert" style="margin-top: 15px;"></div>
         </div>
 
-        <div id="phase3" class="exercise-section" style="display: none;">
-            <h3 style="color: var(--primary-dark);">Phase 3: Come up with the formula</h3>
-            <p>Let's try to find a shortcut to calculate <span class="math-symbol">S<sub>50</sub></span> correctly and fast.</p>
-            <div class="exercise-item">
-                <strong>Question 8: How will the equation in Question 7 change if every infected person infects <span class="math-symbol">q</span> more people (<span class="math-symbol">q &times; S<sub>n</sub></span>)?</strong>
-                <select id="t2_q8" class="fill-blank" style="width: 100%; margin-top: 10px; text-align: left;">
-                    <option value="">-- Select --</option>
-                    <option value="A">q &times; Sn = u1&times;q + u1&times;q² + ... + u1&times;qⁿ</option>
-                    <option value="B">q &times; Sn = u1 + u1&times;q + ... + u1&times;qⁿ⁻¹</option>
-                </select>
-            </div>
-            <div class="exercise-item">
-                <strong>Question 9: When you subtract the equation of <span class="math-symbol">S<sub>n</sub></span> from the equation of <span class="math-symbol">q &times; S<sub>n</sub></span>, what will you get?</strong>
-                <select id="t2_q9" class="fill-blank" style="width: 100%; margin-top: 10px; text-align: left;">
-                    <option value="">-- Select --</option>
-                    <option value="A">Sn(1 - q) = u1 - u1&times;qⁿ</option>
-                    <option value="B">Sn(q - 1) = u1&times;qⁿ - u1</option>
-                </select>
-            </div>
-            <div class="exercise-item">
-                <strong>Question 10: Simplify the equation to obtain the formula for calculating the total sum. What condition should we add?</strong>
-                <span class="math-symbol">q</span> must be <select id="t2_q10" class="fill-blank" style="width: auto;">
-                    <option value="">-- Select --</option>
-                    <option value="!=1">q &ne; 1</option>
-                    <option value=">0">q &gt; 0</option>
-                </select>
+        <!-- FINAL PART (Phase 4) -->
+        <div id="t2_phase4_container" style="display:none; margin-top: 30px; border-top: 2px dashed #cbd5e1; padding-top: 20px;">
+            <h3 style="color: var(--danger); margin-top: 0; text-align: center; font-size: 1.6em;">🎉 CONGRATULATION! YOU HAVE FOUND THE FORMULA!!!</h3>
+            
+            <p style="font-size: 1.05em; line-height: 1.6; margin-bottom: 20px; color: var(--text-main);">
+                As we have determined that the equation we found can calculate the total at any cycle, then we can replace 5 with <span class="math-symbol">n</span> to obtain the formula of the sum of <span class="math-symbol">n</span> first terms of a geometric sequence:
+            </p>
+
+            <div class="formula-box" style="background: #fffbeb; border: 2px solid #f59e0b; color: #b45309; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.15);">
+                Given a geometric sequence (<span class="math-symbol">u<sub>n</sub></span>) with common ratio <span class="math-symbol">q &ne; 1</span>.<br>
+                Let <span class="math-symbol">S<sub>n</sub> = u<sub>1</sub> + u<sub>2</sub> + ... + u<sub>n</sub></span>, one has:<br>
+                <div style="font-size: 1.5em; margin-top: 15px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                    <span class="math-symbol">S<sub>n</sub> = u<sub>1</sub> &times; </span>
+                    <div class="fraction">
+                        <span class="num math-symbol">1 - q<sup>n</sup></span>
+                        <span class="den math-symbol">1 - q</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="formula-box">
-                <div style="font-size: 1.2em; margin-bottom: 10px; color: var(--success);">🎉 <strong>CONGRATULATIONS! YOU HAVE FOUND THE FORMULA!</strong></div>
-                Given a geometric sequence with common ratio <span class="math-symbol">q &ne; 1</span>, the sum of the first <span class="math-symbol">n</span> terms is:<br>
-                <span class="math-symbol" style="font-size: 1.8em; color: var(--danger);">S<sub>n</sub> = u<sub>1</sub> &times; <frac>(1 - q<sup>n</sup>)</frac> / <frac>(1 - q)</frac></span> 
-                <br><span style="font-size: 0.9em; color: #64748b;">(or alternatively <span class="math-symbol">S<sub>n</sub> = u<sub>1</sub> &times; (q<sup>n</sup> - 1) / (q - 1)</span>)</span>
-                <p style="font-size: 0.85em; color: #475569; margin-top: 15px; text-align: left;">
-                    <strong>Meaning:</strong> It represents the mathematical law of accumulation through compounding: <span class="math-symbol">q<sup>n</sup></span> represents the total growth factor after <span class="math-symbol">n</span> steps. This is why geometric sums grow so explosively - the <span class="math-symbol">n</span> is in the exponent!
+            <div class="exercise-item" style="margin-top: 25px;">
+                <strong style="font-size: 1.1em; color: var(--primary-dark);">Now, use the new formula to answer the very first problem.</strong>
+                <blockquote style="border-left: 4px solid var(--primary); padding-left: 15px; margin: 15px 0; color: #475569; font-style: italic; background: #f8fafc; padding: 15px; border-radius: 0 8px 8px 0;">
+                    “In a city, there are 5 patients who appeared to be the first case of contracting COVID-19. Set this first case to be the first cycle of infection. After that, each person infected 2 more people, which made the epidemic blow up. Thus, at the fiftieth cycle, how many infected people are there in the city?”
+                </blockquote>
+                
+                <div style="margin-top: 15px; padding: 20px; background: #e0f2fe; border-radius: 8px; border: 1px dashed #7dd3fc;">
+                    <strong>Write down your detailed solution and upload it here:</strong>
+                    <input type="file" id="t2_solution_upload" accept="image/*,application/pdf" style="margin-top: 10px; display: block; padding: 10px; background: white; border-radius: 6px; width: 100%; border: 1px solid #bae6fd; box-sizing: border-box; cursor: pointer;">
+                    <small style="color: #64748b; margin-top: 8px; display: block;">(Upload an image or PDF of your solution)</small>
+                    <button class="btn-primary" onclick="submitFinalSolution()" style="margin-top: 15px;">📤 UPLOAD & SUBMIT</button>
+                    <div id="ex_result_t2_p4" class="inline-alert" style="margin-top: 10px;"></div>
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top: 25px; background: #f0fdf4; border-color: #bbf7d0;">
+                <h3 style="color: #15803d; margin-top: 0; font-size: 1.2em;">💡 The meaning of the formula:</h3>
+                <p style="font-size: 1.05em; line-height: 1.6; color: #166534;">
+                    It represents the mathematical law of accumulation through compounding: <span class="math-symbol">q<sup>n</sup></span> represents the total growth factor after <span class="math-symbol">n</span> steps. It tells you how many times larger the last "potential" term has become compared to the start. This is why geometric sums grow so explosively - the <span class="math-symbol">n</span> is in the exponent.
+                </p>
+                
+                <div style="text-align: center; margin: 25px 0; padding: 15px; background: white; border-radius: 8px; border: 1px solid #dcfce7;">
+                    <img src="unnamed (19).png" alt="Exponential vs Linear Growth" style="max-width: 100%; max-height: 350px; border-radius: 8px;" onerror="this.src='https://via.placeholder.com/600x400?text=Graph:+Exponential+vs+Linear+Growth'">
+                </div>
+                
+                <p style="font-size: 1.05em; line-height: 1.6; font-weight: bold; color: #166534; text-align: center;">
+                    Thanks to this formula, you can calculate the total result of a repetitive multiplying process without having to go through every single step.
                 </p>
             </div>
-
-            <div class="exercise-item" style="background: #fffbeb; border-color: #fdba74;">
-                <strong style="color: #c2410c;">Final Problem: Back to the 50th cycle. Using the formula you just found, write down the expression to calculate the total infected people at cycle 50:</strong>
-                <div style="margin-top: 10px;">
-                    <span class="math-symbol">S<sub>50</sub> = </span> <input type="text" id="t2_final" class="fill-blank" style="width: 250px; background: white;" placeholder="e.g., 5 * (2^50 - 1) / (2 - 1)">
-                </div>
+            
+            <div style="text-align: right; margin-top: 30px;">
+                <button id="btn-next-t2" class="btn-primary" onclick="completeTab2()" style="font-size: 1.2em; padding: 15px 30px; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);">
+                    Complete Part 2 →
+                </button>
             </div>
-
-            <button class="btn-primary" onclick="submitTab2()" style="width: 100%;">📤 SUBMIT EXERCISE (PART 2)</button>
-            <div id="ex_result_tab2" class="inline-alert" style="margin-top: 15px;"></div>
+            <div style="clear:both;"></div>
         </div>
-
-        <button id="btn-next-t2" class="btn-primary" onclick="completeTab2()" style="float: right; margin-top: 20px; display: none;">Proceed to Part 3 →</button>
     </div>
 
     <!-- TAB 3: PREVENTION (5K) -->
@@ -669,15 +942,13 @@
     // ==========================================
     // CORE FUNCTIONS & LOGGING
     // ==========================================
-    function logAction(action, detail, finishTime = null) {
+    function logAction(action, detail, finishTime = null, fileData = null, fileName = null) {
         if(!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("DÁN_LINK")) {
             console.error("Missing GOOGLE_SCRIPT_URL");
             return;
         }
 
         const params = new URLSearchParams();
-        // Cập nhật key gửi đi để khớp lại với Apps Script Tiếng Việt gốc của bạn 
-        // để khắc phục việc chỉ nhận ID
         params.append("TenHocSinh", state.name); 
         params.append("ID", state.id);
         params.append("HanhDong", action); 
@@ -685,6 +956,10 @@
         
         if(finishTime) {
             params.append("ThoiGianLamBai", finishTime);
+        }
+        if(fileData) {
+            params.append("fileData", fileData);
+            params.append("fileName", fileName);
         }
 
         fetch(GOOGLE_SCRIPT_URL, {
@@ -696,12 +971,12 @@
             body: params
         }).then(() => {
             console.log(`Sent data [${action}] to Google Sheet.`);
-            if(action === 'Submit Tab 1 Exercise' || action === 'Submit Tab 2 Exercise' || action === 'Submit') {
+            if(action === 'Submit Tab 1 Exercise' || action === 'Submit') {
                 document.getElementById('submitStatus') && (document.getElementById('submitStatus').innerText = "✅ Data successfully sent!");
             }
         }).catch(err => {
             console.error("Data submission error:", err);
-            if(action === 'Submit Tab 1 Exercise' || action === 'Submit Tab 2 Exercise' || action === 'Submit') {
+            if(action === 'Submit Tab 1 Exercise' || action === 'Submit') {
                 document.getElementById('submitStatus') && (document.getElementById('submitStatus').innerText = "❌ Connection error! Please check your network.");
             }
         });
@@ -745,20 +1020,18 @@
             document.getElementById('btn-next-t3').innerText = "🏆 COMPLETE PROGRAM";
             document.getElementById('btn-next-t3').classList.replace('btn-primary', 'btn-success');
         } else if(mode === 2) { 
-            document.querySelector('[data-tab="tab1"]').style.display = 'none';
+            document.querySelector('[data-tab="tab1"]').style.display = 'block';
+            document.querySelector('[data-tab="tab1"]').innerText = 'PART 1: VIRAL REPLICATION';
+            
             document.querySelector('[data-tab="tab2"]').style.display = 'none';
-            
             document.querySelector('[data-tab="tab3"]').style.display = 'none';
-            
-            document.querySelector('[data-tab="tab4"]').style.display = 'block';
-            document.querySelector('[data-tab="tab4"]').innerText = 'PART 1: VACCINE';
+            document.querySelector('[data-tab="tab4"]').style.display = 'none';
             
             document.querySelector('[data-tab="tab5"]').style.display = 'block';
             document.querySelector('[data-tab="tab5"]').innerText = 'PART 2: NIPAH VIRUS';
             
-            switchTab('tab4');
-            document.getElementById('btn-next-t4').innerText = "Proceed to Part 2 →";
-            document.getElementById('btn-next-t4').classList.replace('btn-success', 'btn-primary');
+            switchTab('tab1');
+            document.getElementById('btn-next-t1').innerText = "Proceed to Part 2 →";
         }
 
         let modeName = mode === 1 ? "Researcher" : "Pandemic Fighter";
@@ -901,7 +1174,11 @@
     function completeTab1() {
         state.tabsDone.t1 = true;
         document.querySelector('[data-tab="tab1"]').classList.add('completed');
-        switchTab('tab2');
+        if (state.mode === 1) {
+            switchTab('tab2');
+        } else if (state.mode === 2) {
+            switchTab('tab5');
+        }
     }
 
     // ==========================================
@@ -955,77 +1232,145 @@
         logAction('Calculate spread', `u1=${u1}, q=${q}, n=${n} -> Total=${total}`);
     }
 
-    function completeTab2() {
-        state.tabsDone.t2 = true;
-        document.querySelector('[data-tab="tab2"]').classList.add('completed');
-        if (state.mode === 1) switchTab('tab3'); 
-    }
-
-    // Logic kiểm tra Phase 1 để mở khóa Phase 2 & 3
-    function checkPhase1() {
-        const ans = document.getElementById('t2_q4').value.toLowerCase();
-        const fb = document.getElementById('p1_feedback');
-        // Chấp nhận từ khóa geometric hoặc cấp số nhân
-        if(ans.includes('geometric') || ans.includes('nhân') || ans.includes('cấp số')) {
-            document.getElementById('phase2').style.display = 'block';
-            document.getElementById('phase3').style.display = 'block';
-            fb.style.color = 'var(--success)';
-            fb.innerText = 'Correct! Phases 2 & 3 unlocked.';
-            fb.style.display = 'inline';
-            setTimeout(() => document.getElementById('phase2').scrollIntoView({ behavior: 'smooth' }), 300);
-        } else {
-            fb.style.color = 'var(--danger)';
-            fb.innerText = 'Hint: The ratio between terms is constant. Try "geometric sequence".';
-            fb.style.display = 'inline';
-        }
-    }
-
-    // Xử lý nộp dữ liệu toàn bộ Bài tập Tab 2
-    function submitTab2() {
+    function submitPhase1() {
         const q1 = document.getElementById('t2_q1').value || "?";
         const q2_diff = document.getElementById('t2_q2_diff').value || "?";
-        const q2_mean = document.getElementById('t2_q2_meaning').value || "?";
-        const q3_c2 = document.getElementById('t2_q3_c2').value || "?";
-        const q3_c3 = document.getElementById('t2_q3_c3').value || "?";
-        const q3_c4 = document.getElementById('t2_q3_c4').value || "?";
-        const q3_c5 = document.getElementById('t2_q3_c5').value || "?";
+        const q2_meaning = document.querySelector('input[name="t2_q2_meaning"]:checked') ? document.querySelector('input[name="t2_q2_meaning"]:checked').value : "?";
+        const q3_2 = document.getElementById('t2_q3_2').value || "?";
+        const q3_3 = document.getElementById('t2_q3_3').value || "?";
+        const q3_4 = document.getElementById('t2_q3_4').value || "?";
+        const q3_5 = document.getElementById('t2_q3_5').value || "?";
         const q4 = document.getElementById('t2_q4').value || "?";
-        const q5_u1 = document.getElementById('t2_q5_u1').value || "?";
-        const q5_q = document.getElementById('t2_q5_q').value || "?";
-        const q6 = document.getElementById('t2_q6').value || "?";
-        const q7_1 = document.getElementById('t2_q7_1').value || "?";
-        const q7_2 = document.getElementById('t2_q7_2').value || "?";
-        const q8 = document.getElementById('t2_q8').value || "?";
-        const q9 = document.getElementById('t2_q9').value || "?";
-        const q10 = document.getElementById('t2_q10').value || "?";
-        const final_ans = document.getElementById('t2_final').value || "?";
 
-        const details = 
-            "--- PART 2 SOLUTION ---\n" +
-            "Q1 (Total C5): " + q1 + "\n" +
-            "Q2 (Difference C2-C1): " + q2_diff + " | Meaning: " + q2_mean + "\n" +
-            "Q3 (New Cases): 5, " + q3_c2 + ", " + q3_c3 + ", " + q3_c4 + ", " + q3_c5 + "\n" +
-            "Q4 (Sequence Name): " + q4 + "\n" +
-            "Q5 (u1 & q): u1=" + q5_u1 + ", q=" + q5_q + "\n" +
-            "Q6 (2*S5 eq): " + q6 + "\n" +
-            "Q7 (Subtraction): " + q7_1 + " - " + q7_2 + "\n" +
-            "Q8 (q*Sn eq): " + q8 + "\n" +
-            "Q9 (Sn - qSn): " + q9 + "\n" +
-            "Q10 (Condition): " + q10 + "\n" +
-            "FINAL (S50): " + final_ans;
+        const detail = `Tab 2 Phase 1: Q1=${q1}, Q2_Diff=${q2_diff}, Q2_Mean=${q2_meaning}, Q3=[5, ${q3_2}, ${q3_3}, ${q3_4}, ${q3_5}], Q4=${q4}`;
+        logAction('Submit Tab 2 Phase 1', detail);
 
-        logAction('Submit Tab 2 Exercise', details);
-
-        const resDiv = document.getElementById('ex_result_tab2');
+        const resDiv = document.getElementById('ex_result_t2_p1');
         resDiv.style.display = 'block';
         resDiv.className = 'inline-alert alert-success'; 
         resDiv.style.backgroundColor = '#e0f2fe'; 
         resDiv.style.borderColor = '#7dd3fc';
         resDiv.style.color = '#0284c7';
-        resDiv.innerHTML = `✅ Your answers for Part 2 have been recorded in the system.`;
+        resDiv.innerHTML = `✅ Phase 1 answers submitted successfully. Phase 2 is now unlocked!`;
+
+        // Unlock Phase 2
+        document.getElementById('t2_phase2_container').style.display = 'block';
+        setTimeout(() => {
+            document.getElementById('t2_phase2_container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300);
+    }
+    
+    function submitPhase2() {
+        const u1 = document.getElementById('t2_q5_u1').value || "?";
+        const q = document.getElementById('t2_q5_q').value || "?";
         
-        // Hiện nút đi tiếp
-        document.getElementById('btn-next-t2').style.display = 'block';
+        const q6 = [
+            document.getElementById('t2_q6_1').value || "?",
+            document.getElementById('t2_q6_2').value || "?",
+            document.getElementById('t2_q6_3').value || "?",
+            document.getElementById('t2_q6_4').value || "?",
+            document.getElementById('t2_q6_5').value || "?"
+        ];
+        
+        const q7_1 = [
+            document.getElementById('t2_q7_1').value || "?",
+            document.getElementById('t2_q7_2').value || "?",
+            document.getElementById('t2_q7_3').value || "?",
+            document.getElementById('t2_q7_4').value || "?",
+            document.getElementById('t2_q7_5').value || "?"
+        ];
+
+        const q7_2 = [
+            document.getElementById('t2_q7_eq1').value || "?",
+            document.getElementById('t2_q7_eq2').value || "?",
+            document.getElementById('t2_q7_eq3').value || "?",
+            document.getElementById('t2_q7_eq4').value || "?",
+            document.getElementById('t2_q7_eq5').value || "?"
+        ];
+
+        const detail = `Tab 2 Phase 2: Q5(u1=${u1}, q=${q}), Q6=[${q6}], Q7_1=[${q7_1}], Q7_2=[${q7_2}]`;
+        logAction('Submit Tab 2 Phase 2', detail);
+
+        const resDiv = document.getElementById('ex_result_t2_p2');
+        resDiv.style.display = 'block';
+        resDiv.className = 'inline-alert alert-success'; 
+        resDiv.style.backgroundColor = '#f3e8ff'; 
+        resDiv.style.borderColor = '#d8b4fe';
+        resDiv.style.color = '#7e22ce';
+        resDiv.innerHTML = `✅ Phase 2 answers submitted successfully. Phase 3 is now unlocked!`;
+
+        // Unlock Phase 3
+        document.getElementById('t2_phase3_container').style.display = 'block';
+        setTimeout(() => {
+            document.getElementById('t2_phase3_container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300);
+    }
+
+    function submitPhase3() {
+        const q8 = document.querySelector('input[name="t2_q8"]:checked') ? document.querySelector('input[name="t2_q8"]:checked').value : "?";
+        const q9 = document.querySelector('input[name="t2_q9"]:checked') ? document.querySelector('input[name="t2_q9"]:checked').value : "?";
+        const q10 = document.querySelector('input[name="t2_q10"]:checked') ? document.querySelector('input[name="t2_q10"]:checked').value : "?";
+
+        const detail = `Tab 2 Phase 3: Q8=${q8}, Q9=${q9}, Q10=${q10}`;
+        logAction('Submit Tab 2 Phase 3', detail);
+
+        const resDiv = document.getElementById('ex_result_t2_p3');
+        resDiv.style.display = 'block';
+        resDiv.className = 'inline-alert alert-success'; 
+        resDiv.style.backgroundColor = '#ffedd5'; 
+        resDiv.style.borderColor = '#fdba74';
+        resDiv.style.color = '#c2410c';
+        resDiv.innerHTML = `✅ Phase 3 answers submitted successfully. The final part is now unlocked!`;
+
+        // Unlock Phase 4
+        document.getElementById('t2_phase4_container').style.display = 'block';
+        setTimeout(() => {
+            document.getElementById('t2_phase4_container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300);
+    }
+
+    function submitFinalSolution() {
+        const fileInput = document.getElementById('t2_solution_upload');
+        const resDiv = document.getElementById('ex_result_t2_p4');
+        
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            resDiv.style.display = 'block';
+            resDiv.className = 'inline-alert';
+            resDiv.style.backgroundColor = '#fef3c7';
+            resDiv.style.color = '#b45309';
+            resDiv.innerHTML = `⏳ Processing and uploading file...`;
+
+            reader.onload = function(e) {
+                // e.target.result is the Base64 string of the file
+                const base64Data = e.target.result; 
+                
+                // You can pass this base64Data to your Apps Script via logAction
+                logAction('Submit Final Solution', 'Uploaded file', null, base64Data, file.name);
+                
+                resDiv.className = 'inline-alert alert-success'; 
+                resDiv.style.backgroundColor = '#dcfce7';
+                resDiv.style.color = '#166534';
+                resDiv.innerHTML = `✅ File "<b>${file.name}</b>" submitted successfully!`;
+            };
+            
+            reader.readAsDataURL(file); // Converts file to Base64
+        } else {
+            logAction('Submit Final Solution', 'No file uploaded');
+            resDiv.style.display = 'block';
+            resDiv.className = 'inline-alert alert-success'; 
+            resDiv.style.backgroundColor = '#dcfce7';
+            resDiv.style.color = '#166534';
+            resDiv.innerHTML = `✅ Submitted without a file.`;
+        }
+    }
+
+    function completeTab2() {
+        state.tabsDone.t2 = true;
+        document.querySelector('[data-tab="tab2"]').classList.add('completed');
+        if (state.mode === 1) switchTab('tab3'); 
     }
 
     // ==========================================
@@ -1109,7 +1454,7 @@
     }
 
     // ==========================================
-    // TAB 4: VACCINE
+    // TAB 4: VACCINATION
     // ==========================================
     function simulateVaccine() {
         let load = 1000000;
@@ -1199,7 +1544,7 @@
                 alert("Please complete parts 1, 2, and 3 first!"); return;
             }
         } else if (state.mode === 2) {
-            if(!state.tabsDone.t4 || !state.tabsDone.t5) {
+            if(!state.tabsDone.t1 || !state.tabsDone.t5) {
                 alert("Please complete parts 1 and 2 first!"); return;
             }
         } else {
